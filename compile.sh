@@ -1,0 +1,1 @@
+g++ -o tak tak.cpp -std=c++11
