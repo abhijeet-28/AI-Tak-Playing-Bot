@@ -1,14 +1,15 @@
 #include<iostream>
 #include<string>
 #include<cstring>
-#include<fstream>
 #include<vector>
 #include<stack>
 #include<chrono>
+#include<stdlib.h>  //for srand
+#include<time.h>   //for time(NULL) in srand
 
 using namespace std;
 
-void execute_move(string );
+void execute_move(string, short);
 void play();
 
 struct Player {
@@ -16,19 +17,24 @@ struct Player {
 	int caps;
 }players[2];
 
-short turn = 0;
 int max_flats;
 int max_capstones;
+
+vector<vector<string>> possible = { {}, {"1"}, {"2","11"}, {"3","21","12","111"}, {"4","31","13","22","211","121","112","1111"},
+                                    {"5","41","14","32","23","311","131","113","221","212","122","2111","1211","1121","1112","11111"},
+									{"6","51","15","42","24","33","411","141","114","123","132","213","231","321","312","222","3111","1311","1131","1113","1212","2121","2211","1221","1122","2112","21111","12111","11112","11121","11211","111111"},
+									{"7","61","16","52","25","43","34","511","151","115","124","142","214","241","421","412","331","313","133","223","232","322","4111","1411","1141","1114","1213","1231","1321","3211","2131","1132","3121","3112","2311","1123","2113","1312","2212","2122","1222","2221","31111","13111","11113","11131","11311","21112","12112","22111","11122","21121","11212","12121","12211","21211","11221","211111","111211","111112","112111","121111","111121","1111111"}};
 
 
 //'S' = 83,  'F' = 70,   'C' = 67
 vector<vector<stack<pair<int,int>>>> board;
 int n;
-int moves=0;
 int player_num, time_limit;
 
 
 int main() {
+	
+	srand (time(NULL));
 	
 	std::ios::sync_with_stdio(false);
 	
@@ -62,19 +68,11 @@ int main() {
 	play();
 }
 
-void execute_move(string move_string) {
+void execute_move(string move_string, short player) {
 	
-	int row, col, count, change, next_count, prev_row, prev_col;
+	int row, col, count;
 	pair<int, int> stones[5];
-	short current_piece;
 	char direction;
-	
-	if(turn == 0)
-		moves += 1;
-	if(moves != 1)
-		current_piece = turn;
-	else
-		current_piece = 1 - turn;
 	
 	if(isalpha(move_string[0])) {
 		row = n - move_string[2]+'0' + 1;
@@ -82,12 +80,12 @@ void execute_move(string move_string) {
 		
 		// cout<<row<<"   "<<col;
 		if(move_string[0] == 'F' or move_string[0] == 'S') {
-			board[row][col].push(make_pair(current_piece, move_string[0]));
-			players[current_piece].flats -= 1;
+			board[row][col].push(make_pair(player, move_string[0]));
+			players[player].flats -= 1;
 		}
 		else if(move_string[0] == 'C') {
-			board[row][col].push(make_pair(current_piece, 'C'));
-			players[current_piece].caps -= 1;
+			board[row][col].push(make_pair(player, 'C'));
+			players[player].caps -= 1;
 		}
 	}
 	else if(isdigit(move_string[0])) {
@@ -95,8 +93,6 @@ void execute_move(string move_string) {
 		row = n - move_string[2]+'0' + 1;
 		col = (int)move_string[1] - 96;
 		direction = move_string[3];
-		prev_row = row;
-		prev_col = col;
 		if(direction == '+') {
 			for(int i=move_string.length()-1; i>=4; i--) {
 				for(int j=0; j<move_string[i]-'0'; j++) {
@@ -162,92 +158,131 @@ void execute_move(string move_string) {
 			}
 		}
 	}
-	turn = 1 - turn;
 }
 
-// vector<vector<int>> partition(n){
-	// vector<vector<int>> part_list;
-	// part_list.push_back(vector<int>(1,n));
-	// for(int i=1; i<n; i++) {
-		// for(auto const& y: partition(n - i) {
-			// vector<int> temp;
-			// temp.push_back(i);
-			// temp.insert( temp.end(), y.begin(), y.end() );
-			// part_list.push_back(temp);
-		// }
-	// }
-	// return part_list;
-// }
-
-// def check_valid(self, square, direction, partition):
-	// '''For given movement (partition), check if stack on
-	// square can be moved in direction. Assumes active player
-	// is topmost color
-	// '''
-	// if direction == '+':
-		// change = self.n
-	// elif direction == '-':
-		// change = -self.n
-	// elif direction == '>':
-		// change = 1
-	// elif direction == '<':
-		// change = -1
-	// for i in xrange(len(partition)):
-		// next_square = square + change * (i + 1)
-		// if len(self.board[next_square]) > 0 and self.board[next_square][-1][1] == 'C':
-			// return False
-		// if len(self.board[next_square]) > 0 and self.board[next_square][-1][1] == 'S' and i != len(partition) - 1:
-			// return False
-		// if i == len(partition) - 1 and len(self.board[next_square]) > 0 and self.board[next_square][-1][1] == 'S' and partition[i] > 1:
-			// return False
-		// if i == len(partition) - 1 and len(self.board[next_square]) > 0 and self.board[next_square][-1][1] == 'S' and self.board[square][-1][1] != 'C':
-			// return False
-	// return True
-
-// vector<string> generate_stack_moves(vector<string> all_moves, int row, int col) {
-	// int size = board[row][col].size();
-	// char dirs[] = {'+', '-', '<', '>'};
-	// int up = n - row;
-	// int down = row - 1;
-	// int right = n - col;
-	// int left = col - 1;
-	// int rem_squares = {up, down, left, right};
-	// size = min(size, n);
-	// for(int i=0; i<size; i++) {
-		// vector<vector<int>> part_list = partition(i + 1);
-		// for(int j=0; j<4; j++) {
-			// part_dir = [part for part in part_list if len(part) <= rem_squares[di]]
-			// for part in part_dir:
-				// if self.check_valid(square, dirs[di], part):
-					// part_string = ''.join([str(i) for i in part])
-					// all_moves.append(str(sum(part)) + self.all_squares[square] + dirs[di] + part_string)
-		// }
-	// }
-	// return all_moves
+vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
+{
+	int size=board[row][col].size();
+	if(size==0)
+		return all_moves;
+	size=min(size,n);
+	string pos=(char)(col+96)+to_string(n-row+1);
+	int i, j;
+	string move;
 	
-// }
+	// generating moves for  -
+	int index=0;
+	int temp=row+1;
+	while(temp<=n)
+	{
+		if(!board[temp][col].empty()) {
+			if(board[temp][col].top().second=='S' || board[temp][col].top().second=='C')
+				break;
+		}
+		index++;
+		temp++;
+	}
+	for(i=1; i<=size; i++) {
+		for(j=0; j<possible[i].size(); j++) {
+			move = possible[i][j];
+			if(move.length() <= index)
+				all_moves.push_back(possible[i][0]+pos+"-"+move);
+			else
+				break;
+		}
+	}
+	
+	//generating moves for  +
+	index=0;
+	temp=row-1;
+	while(temp>0)
+	{
+		if(!board[temp][col].empty()) {
+			if(board[temp][col].top().second=='S' || board[temp][col].top().second=='C')
+				break;
+		}
+		index++;
+		temp--;
+	}
+	for(i=1; i<=size; i++) {
+		for(j=0; j<possible[i].size(); j++) {
+			move = possible[i][j];
+			if(move.length() <= index)
+				all_moves.push_back(possible[i][0]+pos+"+"+move);
+			else
+				break;
+		}
+	}
+	
+	//genrating moves for >
+	index=0;
+	temp=col+1;
+	while(temp<=n)
+	{
+		if(!board[row][temp].empty()) {
+			if(board[row][temp].top().second=='S' || board[row][temp].top().second=='C')
+				break;
+		}
+		index++;
+		temp++;
+	}
+	for(i=1; i<=size; i++) {
+		for(j=0; j<possible[i].size(); j++) {
+			move = possible[i][j];
+			if(move.length() <= index)
+				all_moves.push_back(possible[i][0]+pos+">"+move);
+			else
+				break;
+		}
+	}
+	
+	//generating moves for <
+	index=0;
+	temp=col-1;
+	while(temp>0)
+	{
+		if(!board[row][temp].empty()) {
+			if(board[row][temp].top().second=='S' || board[row][temp].top().second=='C')
+				break;
+		}
+		index++;
+		temp--;
+	}
+	for(i=1; i<=size; i++) {
+		for(j=0; j<possible[i].size(); j++) {
+			string move = possible[i][j];
+			if(move.length() <= index)
+				all_moves.push_back(possible[i][0]+pos+"<"+move);
+			else
+				break;
+		}
+	}
+	
+	return all_moves;
+}
 
 vector<string> generate_all_moves(int player) {
 	
+	string move;
 	vector<string> all_moves;
 	for(int i=1; i<=n; i++) {
 		for(int j=1; j<=n; j++) {
 			if(board[i][j].empty()) {
 				if(players[player].flats > 0) {
-					string move="F";
+					move="F";
 					move+=(char)(j+96);
 					move+=to_string(n-i+1);
 					all_moves.push_back(move);
 				}
-				if(moves != player && players[player].flats > 0) {
-					string move="S";
-					move+=(char)(j+48);
+				if(players[player].flats > 0) {
+					move="S";
+					move+=(char)(j+96);
 					move+=to_string(n-i+1);
 					all_moves.push_back(move);
 				}
-				if(moves != player && players[player].caps > 0) {
-					string move="C";
-					move+=(char)(j+48);
+				if(players[player].caps > 0) {
+					move="C";
+					move+=(char)(j+96);
 					move+=to_string(n-i+1);
 					all_moves.push_back(move);
 				}
@@ -256,8 +291,9 @@ vector<string> generate_all_moves(int player) {
 	}
 	for(int i=1; i<=n; i++) {
 		for(int j=1; j<=n; j++) {
-			if((!board[i][j].empty()) && (board[i][j].top().first == player) && (moves != player))
-				all_moves += self.generate_stack_moves(all_moves, i, j);
+			if((!board[i][j].empty()) && (board[i][j].top().first == player))
+				all_moves = generate_stack_moves(all_moves, i, j);
+		}
 	}
 	return all_moves;
 }
@@ -267,34 +303,59 @@ void play() {
 	
 	if(player_num == 1) {
 		getline(cin,move);
-		execute_move(move);
+		execute_move(move,1);
+		
+		if(move=="Fa1")
+			move=string("F")+"a"+to_string(n);
+		else
+			move="Fa1";
+		
+		cout<<move<<"\n"<<flush;
+		execute_move(move,0);
+		
+		getline(cin,move);
+		execute_move(move,0);
+	}
+	else {
+		cout<<"Fa1"<<"\n"<<flush;
+		execute_move("Fa1",1);
+		
+		getline(cin,move);
+		execute_move(move,0);
 	}
 	
 	while(true) {
 		
 		vector<string> all_moves = generate_all_moves(player_num);
-		cout<<"\n";
-		for(int i=0;i<all_moves.size();i++) {
-			cout<<all_moves[i]<<"   ";
-		}
-		cout<<"\n\n";
+		int move_num = rand() % (all_moves.size());
+		move = all_moves[move_num];
+		execute_move(move,player_num);
+		cout<<move<<"\n"<<flush;
+		
+		//print all valid moves
+		// cout<<"\n";
+		// for(int i=0;i<all_moves.size();i++) {
+			// cout<<all_moves[i]<<"   ";
+		// }
+		// cout<<"\n\n";
+		
 		//print the board
-		vector<vector<stack<pair<int,int>>>> temp(board);
-		for(int i=1; i<=n; i++) {
-			for(int j=1; j<=n; j++) {
-				if(temp[i][j].empty())
-					cout<<"-";
-				while(!temp[i][j].empty()) {
-					cout<<temp[i][j].top().first+1<<(char)temp[i][j].top().second<<" ";
-					temp[i][j].pop();
-				}
-				cout<<"\t";
-			}
-			cout<<"\n";
-		}
-		cout<<"\n";
+		// vector<vector<stack<pair<int,int>>>> temp(board);
+		// for(int i=1; i<=n; i++) {
+			// for(int j=1; j<=n; j++) {
+				// if(temp[i][j].empty())
+					// cout<<"-";
+				// while(!temp[i][j].empty()) {
+					// cout<<temp[i][j].top().first+1<<(char)temp[i][j].top().second<<" ";
+					// temp[i][j].pop();
+				// }
+				// cout<<"\t";
+			// }
+			// cout<<"\n";
+		// }
+		// cout<<"\n";
 		
 		getline(cin,move);
-		execute_move(move);
+		execute_move(move, 1-player_num);
 	}
 }

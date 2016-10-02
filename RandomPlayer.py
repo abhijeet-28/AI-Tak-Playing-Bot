@@ -201,7 +201,7 @@ class RandomPlayer:
 			move = sys.stdin.readline().strip()
 			self.game.execute_move(move)
 		while True:
-			time.sleep(1)
+			# time.sleep(1)
 			all_moves = self.game.generate_all_moves(self.player)
 			move = all_moves[random.randint(0, len(all_moves)-1)]
 			self.game.execute_move(move)
@@ -210,7 +210,7 @@ class RandomPlayer:
 			sys.stderr.write('Chosen move: ' + move)	
 			sys.stdout.write(move)
 			sys.stdout.flush()
-			time.sleep(1)
+			# time.sleep(1)
 			move = sys.stdin.readline().strip()
 			self.game.execute_move(move)
 
