@@ -169,24 +169,53 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 	string pos=(char)(col+96)+to_string(n-row+1);
 	int i, j;
 	string move;
+
+	bool capstop=false;
+	if(board[row][col].top().second=='C') capstop=true;
 	
 	// generating moves for  -
 	int index=0;
 	int temp=row+1;
-	while(temp<=n)
+	int movelength=0;
+	if(capstop==false)
 	{
-		if(!board[temp][col].empty()) {
-			if(board[temp][col].top().second=='S' || board[temp][col].top().second=='C')
-				break;
+		while(temp<=n)
+		{
+			if(!board[temp][col].empty()) {
+
+				if(board[temp][col].top().second=='S' || board[temp][col].top().second=='C')
+					break;
+			}
+			index++;
+			temp++;
 		}
-		index++;
-		temp++;
+	}
+	else
+	{
+		while(temp<=n)
+		{
+			if(!board[temp][col].empty()) {
+
+				if(board[temp][col].top().second=='C')
+					break;
+				else if(board[temp][col].top().second=='S')
+				{
+					index++; break;
+				}
+			}
+			index++;
+			temp++;
+		}
 	}
 	for(i=1; i<=size; i++) {
 		for(j=0; j<possible[i].size(); j++) {
 			move = possible[i][j];
-			if(move.length() <= index)
-				all_moves.push_back(possible[i][0]+pos+"-"+move);
+			movelength=move.length();
+
+
+			if(movelength <= index){
+				if(capstop==true && movelength==index && move[movelength-1]!='1') continue;
+				all_moves.push_back(possible[i][0]+pos+"-"+move);}
 			else
 				break;
 		}
@@ -195,20 +224,39 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 	//generating moves for  +
 	index=0;
 	temp=row-1;
-	while(temp>0)
+	if(capstop==false)
 	{
-		if(!board[temp][col].empty()) {
-			if(board[temp][col].top().second=='S' || board[temp][col].top().second=='C')
-				break;
+		while(temp>0)
+		{
+			if(!board[temp][col].empty()) {
+				if(board[temp][col].top().second=='S' || board[temp][col].top().second=='C')
+					break;
+			}
+			index++;
+			temp--;
 		}
-		index++;
-		temp--;
+	}
+	else
+	{
+		while(temp>0)
+		{
+			if(board[temp][col].top().second=='C')
+					break;
+				else if(board[temp][col].top().second=='S')
+				{
+					index++; break;
+				}
+			index++;
+			temp--;
+		}
 	}
 	for(i=1; i<=size; i++) {
 		for(j=0; j<possible[i].size(); j++) {
 			move = possible[i][j];
-			if(move.length() <= index)
-				all_moves.push_back(possible[i][0]+pos+"+"+move);
+			movelength=move.length();
+			if(movelength <= index){
+				if(capstop==true && movelength==index && move[movelength-1]!='1') continue;
+				all_moves.push_back(possible[i][0]+pos+"+"+move);}
 			else
 				break;
 		}
@@ -217,20 +265,38 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 	//genrating moves for >
 	index=0;
 	temp=col+1;
-	while(temp<=n)
+	if(capstop==false)
 	{
-		if(!board[row][temp].empty()) {
-			if(board[row][temp].top().second=='S' || board[row][temp].top().second=='C')
-				break;
+		while(temp<=n)
+		{
+			if(!board[row][temp].empty()) {
+				if(board[row][temp].top().second=='S' || board[row][temp].top().second=='C')
+					break;
+			}
+			index++;
+			temp++;
 		}
-		index++;
-		temp++;
+	}
+	else
+	{
+		while(temp<=n)
+		{
+			if(board[temp][col].top().second=='C')
+					break;
+				else if(board[temp][col].top().second=='S')
+				{
+					index++; break;
+				}
+			index++;
+			temp++;
+		}
 	}
 	for(i=1; i<=size; i++) {
 		for(j=0; j<possible[i].size(); j++) {
 			move = possible[i][j];
-			if(move.length() <= index)
-				all_moves.push_back(possible[i][0]+pos+">"+move);
+			if(movelength <= index){
+				if(capstop==true && movelength==index && move[movelength-1]!='1') continue;
+				all_moves.push_back(possible[i][0]+pos+">"+move);}
 			else
 				break;
 		}
@@ -239,20 +305,40 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 	//generating moves for <
 	index=0;
 	temp=col-1;
-	while(temp>0)
+	if(capstop==false)
 	{
-		if(!board[row][temp].empty()) {
-			if(board[row][temp].top().second=='S' || board[row][temp].top().second=='C')
-				break;
+		while(temp>0)
+		{
+			if(!board[row][temp].empty()) {
+				if(board[row][temp].top().second=='S' || board[row][temp].top().second=='C')
+					break;
+			}
+			index++;
+			temp--;
 		}
-		index++;
-		temp--;
+	}
+	else
+	{
+		while(temp>0)
+		{
+			if(board[temp][col].top().second=='C')
+					break;
+				else if(board[temp][col].top().second=='S')
+				{
+					index++; break;
+				}
+			index++;
+			temp--;
+		}
+
 	}
 	for(i=1; i<=size; i++) {
 		for(j=0; j<possible[i].size(); j++) {
 			string move = possible[i][j];
-			if(move.length() <= index)
-				all_moves.push_back(possible[i][0]+pos+"<"+move);
+			movelength=move.length();
+			if(movelength <= index){
+				if(capstop==true && movelength==index && move[movelength-1]!='1') continue;
+				all_moves.push_back(possible[i][0]+pos+"<"+move);}
 			else
 				break;
 		}
