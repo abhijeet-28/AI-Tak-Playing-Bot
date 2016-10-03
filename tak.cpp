@@ -9,7 +9,6 @@
 
 using namespace std;
 
-void execute_move(string, short);
 void play();
 
 struct Player {
@@ -160,6 +159,98 @@ void execute_move(string move_string, short player) {
 	}
 }
 
+void reverse_execute_move(string move_string, short player) {
+	
+	int row, col, count;
+	pair<int, int> stones[5];
+	char direction;
+	
+	if(isalpha(move_string[0])) {
+		row = n - move_string[2]+'0' + 1;
+		col = (int)move_string[1] - 96;
+		
+		// cout<<row<<"   "<<col;
+		if(move_string[0] == 'F' or move_string[0] == 'S') {
+			board[row][col].pop();
+			players[player].flats += 1;
+		}
+		else if(move_string[0] == 'C') {
+			board[row][col].pop();
+			players[player].caps += 1;
+		}
+	}
+	else if(isdigit(move_string[0])) {
+		count = 1;
+		row = n - move_string[2]+'0' + 1;
+		col = (int)move_string[1] - 96;
+		direction = move_string[3];
+		if(direction == '+') {
+			for(int i=4; i<move_string.length(); i++) {
+				for(int j=0; j<move_string[i]-'0'; j++) {
+					stones[j] = board[row-count][col].top();
+					board[row-count][col].pop();
+				}
+				if(!board[row-count][col].empty()) {
+					if(board[row-count][col].top().second == 83)
+						board[row-count][col].top().second = 'F';
+				}
+				for(int j=move_string[i]-1-'0'; j>=0; j--) {
+					board[row][col].push(stones[j]);
+				}
+				count++;
+			}
+		}
+		else if(direction == '-') {
+			for(int i=4; i<move_string.length(); i++) {
+				for(int j=0; j<move_string[i]-'0'; j++) {
+					stones[j] = board[row+count][col].top();
+					board[row+count][col].pop();
+				}
+				if(!board[row+count][col].empty()) {
+					if(board[row+count][col].top().second == 83)
+						board[row+count][col].top().second = 'F';
+				}
+				for(int j=move_string[i]-1-'0'; j>=0; j--) {
+					board[row][col].push(stones[j]);
+				}
+				count++;
+			}
+		}
+		else if(direction == '>') {
+			for(int i=4; i<move_string.length(); i++) {
+				for(int j=0; j<move_string[i]-'0'; j++) {
+					stones[j] = board[row][col+count].top();
+					board[row][col+count].pop();
+				}
+				if(!board[row][col+count].empty()) {
+					if(board[row][col+count].top().second == 83)
+						board[row][col+count].top().second = 'F';
+				}
+				for(int j=move_string[i]-1-'0'; j>=0; j--) {
+					board[row][col].push(stones[j]);
+				}
+				count++;
+			}
+		}
+		else if(direction == '<') {
+			for(int i=4; i<move_string.length(); i++) {
+				for(int j=0; j<move_string[i]-'0'; j++) {
+					stones[j] = board[row][col-count].top();
+					board[row][col-count].pop();
+				}
+				if(!board[row][col-count].empty()) {
+					if(board[row][col-count].top().second == 83)
+						board[row][col-count].top().second = 'F';
+				}
+				for(int j=move_string[i]-1-'0'; j>=0; j--) {
+					board[row][col].push(stones[j]);
+				}
+				count++;
+			}
+		}
+	}
+}
+
 vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 {
 	int size=board[row][col].size();
@@ -169,7 +260,6 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 	string pos=(char)(col+96)+to_string(n-row+1);
 	int i, j;
 	string move;
-
 	bool capstop=false;
 	if(board[row][col].top().second=='C') capstop=true;
 	
@@ -182,7 +272,6 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 		while(temp<=n)
 		{
 			if(!board[temp][col].empty()) {
-
 				if(board[temp][col].top().second=='S' || board[temp][col].top().second=='C')
 					break;
 			}
@@ -211,11 +300,10 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 		for(j=0; j<possible[i].size(); j++) {
 			move = possible[i][j];
 			movelength=move.length();
-
-
-			if(movelength <= index){
+			if(movelength <= index) {
 				if(capstop==true && movelength==index && move[movelength-1]!='1') continue;
-				all_moves.push_back(possible[i][0]+pos+"-"+move);}
+				all_moves.push_back(possible[i][0]+pos+"-"+move);
+			}
 			else
 				break;
 		}
@@ -240,16 +328,19 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 	{
 		while(temp>0)
 		{
-			if(board[temp][col].top().second=='C')
+			if(!board[temp][col].empty()) {
+				if(board[temp][col].top().second=='C')
 					break;
 				else if(board[temp][col].top().second=='S')
 				{
 					index++; break;
 				}
+			}
 			index++;
 			temp--;
 		}
 	}
+	
 	for(i=1; i<=size; i++) {
 		for(j=0; j<possible[i].size(); j++) {
 			move = possible[i][j];
@@ -281,12 +372,14 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 	{
 		while(temp<=n)
 		{
-			if(board[temp][col].top().second=='C')
+			if(!board[row][temp].empty()) {
+				if(board[row][temp].top().second=='C')
 					break;
-				else if(board[temp][col].top().second=='S')
+				else if(board[row][temp].top().second=='S')
 				{
 					index++; break;
 				}
+			}
 			index++;
 			temp++;
 		}
@@ -294,6 +387,7 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 	for(i=1; i<=size; i++) {
 		for(j=0; j<possible[i].size(); j++) {
 			move = possible[i][j];
+			movelength=move.length();
 			if(movelength <= index){
 				if(capstop==true && movelength==index && move[movelength-1]!='1') continue;
 				all_moves.push_back(possible[i][0]+pos+">"+move);}
@@ -321,12 +415,14 @@ vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 	{
 		while(temp>0)
 		{
-			if(board[temp][col].top().second=='C')
+			if(!board[row][temp].empty()) {
+				if(board[row][temp].top().second=='C')
 					break;
-				else if(board[temp][col].top().second=='S')
+				else if(board[row][temp].top().second=='S')
 				{
 					index++; break;
 				}
+			}
 			index++;
 			temp--;
 		}
