@@ -10,6 +10,7 @@
 using namespace std;
 
 void play();
+int evaluate();
 
 struct Player {
 	int flats;
@@ -496,6 +497,74 @@ vector<string> generate_all_moves(int player) {
 		}
 	}
 	return all_moves;
+}
+
+string recurse(vector<string> moves,int depth,int player)
+{
+	int len=moves.size(),i,val;
+	string best_move;
+	if(depth==5) 
+	{
+		if(len>0) {
+			best_move=moves[0];
+			execute_move(best_move,player);
+		val=evaluate();
+
+		reverse_execute_move(best_move,player);}
+		if(player==1)
+		{
+			for(i=1;i<len;i++)
+			{
+				string temp_move=moves[i];
+				execute_move(temp_move,player);
+				int temp=evaluate();
+				if(temp>val)
+				{
+					val=temp;
+					best_move=temp_move;
+
+				}
+				reverse_execute_move(temp_move,player);
+
+			}
+		}
+		else
+		{
+			for(i=1;i<len;i++)
+			{
+				string temp_move=moves[i];
+				execute_move(temp_move,player);
+				int temp=evaluate();
+				if(temp<val)
+				{
+					val=temp;
+					best_move=temp_move;
+
+				}
+				reverse_execute_move(temp_move,player);
+
+			}
+		}
+	}
+	else
+	{
+	
+		for(i=0;i<len;i++)
+		{
+			execute_move(moves[i],player);
+			vector<string> all=generate_all_moves(player);
+			recurse(all,depth+1,(player+1)%2);
+			reverse_execute_move(moves[i],player);
+		}
+	}
+}
+
+
+int evaluate()
+{
+	return (rand()%100);
+
+	
 }
 
 void play() {
