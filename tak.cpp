@@ -499,64 +499,67 @@ vector<string> generate_all_moves(int player) {
 	return all_moves;
 }
 
-string recurse(vector<string> moves,int depth,int player)
+int recurse(vector<string> moves, int depth, int player)
 {
-	int len=moves.size(),i,val;
-	string best_move;
-	if(depth==5) 
+	int len=moves.size(), i, val, temp;
+	if(depth==2)
 	{
-		if(len>0) {
-			best_move=moves[0];
-			execute_move(best_move,player);
-		val=evaluate();
-
-		reverse_execute_move(best_move,player);}
-		if(player==1)
+		val = evaluate();   //value for first move
+		if(player==player_num)
 		{
 			for(i=1;i<len;i++)
 			{
-				string temp_move=moves[i];
-				execute_move(temp_move,player);
-				int temp=evaluate();
+				temp = evaluate();
 				if(temp>val)
-				{
 					val=temp;
-					best_move=temp_move;
-
-				}
-				reverse_execute_move(temp_move,player);
-
 			}
 		}
 		else
 		{
 			for(i=1;i<len;i++)
 			{
-				string temp_move=moves[i];
-				execute_move(temp_move,player);
-				int temp=evaluate();
+				temp=evaluate();
 				if(temp<val)
-				{
 					val=temp;
-					best_move=temp_move;
-
-				}
-				reverse_execute_move(temp_move,player);
-
 			}
 		}
 	}
 	else
 	{
-	
-		for(i=0;i<len;i++)
-		{
-			execute_move(moves[i],player);
-			vector<string> all=generate_all_moves(player);
-			recurse(all,depth+1,(player+1)%2);
-			reverse_execute_move(moves[i],player);
+		if(player==player_num) {
+			val = INT32_MIN;
+			for(i=0;i<len;i++) {
+				execute_move(moves[i],player);
+				vector<string> all=generate_all_moves(player);
+				
+				if(all.size()>0)
+					temp = recurse(all,depth+1,1-player);
+				else
+					temp = evaluate();
+								
+				if(temp>val)
+					val = temp;
+				reverse_execute_move(moves[i],player);
+			}
+		}
+		else {
+			val = INT32_MAX;
+			for(i=0;i<len;i++) {
+				execute_move(moves[i],player);
+				vector<string> all=generate_all_moves(player);
+				
+				if(all.size()>0)
+					temp = recurse(all,depth+1,1-player);
+				else
+					temp = evaluate();
+								
+				if(temp<val)
+					val = temp;
+				reverse_execute_move(moves[i],player);
+			}
 		}
 	}
+	return val;
 }
 
 
@@ -596,8 +599,26 @@ void play() {
 	while(true) {
 		
 		vector<string> all_moves = generate_all_moves(player_num);
-		int move_num = rand() % (all_moves.size());
-		move = all_moves[move_num];
+		int temp_val;
+		
+		//calling recurse function for all moves of depth 0
+		int val = INT32_MIN;
+		for(int i=0;i<all_moves.size();i++) {
+			execute_move(all_moves[i],player_num);
+			vector<string> all=generate_all_moves(player_num);
+			
+			if(all.size()>0)
+				temp_val = recurse(all,1,player_num);
+			else
+				temp_val = evaluate();
+							
+			if(temp_val>val) {
+				val = temp_val;
+				move = all_moves[i];
+			}
+			reverse_execute_move(all_moves[i],player_num);
+		}
+		
 		execute_move(move,player_num);
 		cout<<move<<"\n"<<flush;
 		
