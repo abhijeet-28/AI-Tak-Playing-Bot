@@ -19,6 +19,8 @@ struct Player {
 int max_flats;
 int max_capstones;
 
+stack<pair<int,int>> walls;
+
 vector<vector<string>> possible = { {}, {"1"}, {"2","11"}, {"3","21","12","111"}, {"4","31","13","22","211","121","112","1111"},
                                     {"5","41","14","32","23","311","131","113","221","212","122","2111","1211","1121","1112","11111"},
 									{"6","51","15","42","24","33","411","141","114","123","132","213","231","321","312","222","3111","1311","1131","1113","1212","2121","2211","1221","1122","2112","21111","12111","11112","11121","11211","111111"},
@@ -99,8 +101,10 @@ void execute_move(string move_string, short player) {
 					board[row][col].pop();
 				}
 				if(!board[row-count][col].empty()) {
-					if(board[row-count][col].top().second == 83)
+					if(board[row-count][col].top().second == 83) {
 						board[row-count][col].top().second = 'F';
+						walls.push(make_pair(row-count,col));
+					}
 				}
 				for(int j=move_string[i]-1-'0'; j>=0; j--) {
 					board[row-count][col].push(stones[j]);
@@ -115,8 +119,10 @@ void execute_move(string move_string, short player) {
 					board[row][col].pop();
 				}
 				if(!board[row+count][col].empty()) {
-					if(board[row+count][col].top().second == 83)
+					if(board[row+count][col].top().second == 83) {
 						board[row+count][col].top().second = 'F';
+						walls.push(make_pair(row+count,col));
+					}
 				}
 				for(int j=move_string[i]-1-'0'; j>=0; j--) {
 					board[row+count][col].push(stones[j]);
@@ -131,8 +137,10 @@ void execute_move(string move_string, short player) {
 					board[row][col].pop();
 				}
 				if(!board[row][col+count].empty()) {
-					if(board[row][col+count].top().second == 83)
+					if(board[row][col+count].top().second == 83) {
 						board[row][col+count].top().second = 'F';
+						walls.push(make_pair(row,col+count));
+					}
 				}
 				for(int j=move_string[i]-1-'0'; j>=0; j--) {
 					board[row][col+count].push(stones[j]);
@@ -147,8 +155,10 @@ void execute_move(string move_string, short player) {
 					board[row][col].pop();
 				}
 				if(!board[row][col-count].empty()) {
-					if(board[row][col-count].top().second == 83)
+					if(board[row][col-count].top().second == 83) {
 						board[row][col-count].top().second = 'F';
+						walls.push(make_pair(row,col-count));
+					}
 				}
 				for(int j=move_string[i]-1-'0'; j>=0; j--) {
 					board[row][col-count].push(stones[j]);
@@ -191,8 +201,10 @@ void reverse_execute_move(string move_string, short player) {
 					board[row-count][col].pop();
 				}
 				if(!board[row-count][col].empty()) {
-					if(board[row-count][col].top().second == 83)
-						board[row-count][col].top().second = 'F';
+					if(walls.top().first==row-count && walls.top().second==col) {
+						board[row-count][col].top().second = 'S';
+						walls.pop();
+					}
 				}
 				for(int j=move_string[i]-1-'0'; j>=0; j--) {
 					board[row][col].push(stones[j]);
@@ -207,8 +219,10 @@ void reverse_execute_move(string move_string, short player) {
 					board[row+count][col].pop();
 				}
 				if(!board[row+count][col].empty()) {
-					if(board[row+count][col].top().second == 83)
-						board[row+count][col].top().second = 'F';
+					if(walls.top().first==row+count && walls.top().second==col) {
+						board[row+count][col].top().second = 'S';
+						walls.pop();
+					}
 				}
 				for(int j=move_string[i]-1-'0'; j>=0; j--) {
 					board[row][col].push(stones[j]);
@@ -223,8 +237,10 @@ void reverse_execute_move(string move_string, short player) {
 					board[row][col+count].pop();
 				}
 				if(!board[row][col+count].empty()) {
-					if(board[row][col+count].top().second == 83)
-						board[row][col+count].top().second = 'F';
+					if(walls.top().first==row && walls.top().second==col+count) {
+						board[row][col+count].top().second = 'S';
+						walls.pop();
+					}
 				}
 				for(int j=move_string[i]-1-'0'; j>=0; j--) {
 					board[row][col].push(stones[j]);
@@ -239,8 +255,10 @@ void reverse_execute_move(string move_string, short player) {
 					board[row][col-count].pop();
 				}
 				if(!board[row][col-count].empty()) {
-					if(board[row][col-count].top().second == 83)
-						board[row][col-count].top().second = 'F';
+					if(walls.top().first==row && walls.top().second==col-count) {
+						board[row][col-count].top().second = 'S';
+						walls.pop();
+					}
 				}
 				for(int j=move_string[i]-1-'0'; j>=0; j--) {
 					board[row][col].push(stones[j]);
