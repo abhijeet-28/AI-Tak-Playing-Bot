@@ -1,0 +1,137 @@
+Sd5
+Fe2
+
+Fe4   Se4   Fe2   Se2   1b5<1   1a4-1   1a4+1   1b3-1   1b3<1   1d3-1   1d3+1   1d3>1   1b2>1   1c2<1   1d2-1   1d2>1   1d2<1
+
+1F      2S      2S      1S      1S
+2S      2S      1S      1S      -
+2F      2S      1C      2C      1S
+1S      2F      2F      2S      2F
+2F      1S      1S      1F      1S
+
+1F      2S      2S      1S      1S
+2S      2S      1S      1S      -
+2F      2S      1C      2C      1S
+1S      2F      2F      2S      -
+2F      1S      1S      1F      1S
+
+1F      2S      2S      1S      1S
+2S      2S      1S      1S      -
+2F      2S      1C      2C      1S
+1S      2F      2F      2S      2F
+2F      1S      1S      1F      1S
+
+Se4
+1d3>1
+
+1b5<1   1a4-1   1a4+1   1b3-1   1b3<1   1d3-1   1d3+1   1d3>1   1b2>1   1c2<1   1d2-1   1d2>1   1d2<1
+
+1F      2S      2S      1S      1S
+2S      2S      1S      1S      1S
+2F      2S      1C      -       2C 1F
+1S      2F      2F      2S      2F
+2F      1S      1S      1F      1S
+
+1F      2S      2S      1S      1S
+2S      2S      1S      1S      1S
+2F      2S      1C      2C      1S
+1S      2F      2F      2S      2F
+2F      1S      1S      1F      1S
+
+1F      2S      2S      1S      1S
+2S      2S      1S      1S      1S
+2F      2S      1C      -       2C 1F
+1S      2F      2F      2S      2F
+2F      1S      1S      1F      1S
+
+Fd3
+1a4-1
+
+1b5<1   1a4-1   1a4+1   1b3-1   1b3<1   1e3-1   2e3-2   2e3-11   1e3+1   1e3<1   1b2>1   1c2<1   1d2-1   1d2+1   1d2>1   1d2<1
+
+1F      2S      2S      1S      1S
+-       2S      1S      1S      1S
+2S 2F   2S      1C      1F      2C 1S
+1S      2F      2F      2S      2F
+2F      1S      1S      1F      1S
+
+1F      2S      2S      1S      1S
+2S      2S      1S      1S      1S
+2F      2S      1C      1F      2C 1S
+1S      2F      2F      2S      2F
+2F      1S      1S      1F      1S
+
+1F      2S      2S      1S      1S
+-       2S      1S      1S      1S
+2S 2F   2S      1C      1F      2C 1S
+1S      2F      2F      2S      2F
+2F      1S      1S      1F      1S
+
+Fa4
+1d2-1
+
+1b5<1   1b4<1   1a3+1   2a3+2   2a3+11   1b3-1   1e3-1   2e3-2   2e3-11   1e3+1   1e3<1   1b2>1   1c2<1   1d2-1   1d2+1   1d2>1   1d2<1
+
+1F      2S      2S      1S      1S
+1F      2S      1S      1S      1S
+2S 2F   2S      1C      1F      2C 1S
+1S      2F      2F      -       2F
+2F      1S      1S      2S 1F   1S
+
+1F      2S      2S      1S      1S
+1F      2S      1S      1S      1S
+2S 2F   2S      1C      1F      2C 1S
+1S      2F      2F      2S      2F
+2F      1S      1S      1F      1S
+
+1F      2S      2S      1S      1S
+1F      2S      1S      1S      1S
+2S 2F   2S      1C      1F      2C 1S
+1S      2F      2F      -       2F
+2F      1S      1S      2S 1F   1S
+
+Fd2
+2d1+2
+
+1b5<1   1b4<1   1a3+1   2a3+2   2a3+11   1b3-1   1e3-1   2e3-2   2e3-11   1e3+1   1e3<1   1b2>1   1c2>1   1c2<1   1e2<1   1d1+1   2d1+2   2d1+11
+
+1F      2S      2S      1S      1S
+1F      2S      1S      1S      1S
+2S 2F   2S      1C      1F      2C 1S
+1S      2F      2F      2S 1F 1F        2F
+2F      1S      1S      -       1S
+
+1F      2S      2S      1S      1S
+1F      2S      1S      1S      1S
+2S 2F   2S      1C      1F      2C 1S
+1S      2F      2F      1F      2F
+2F      1S      1S      2S 1F   1S
+
+1F      2S      2S      1S      1S
+1F      2S      1S      1S      1S
+2S 2F   2S      1C      1F      2C 1S
+1S      2F      2F      2S 1F 1F        2F
+2F      1S      1S      -       1S
+
+Fd1
+1e3+1
+
+1b5<1   1b4<1   1a3+1   2a3+2   2a3+11   1b3-1   1e3-1   2e3-2   2e3-11   1e3+1   1e3<1   1b2>1   1c2<1   1d2-1   2d2-2   3d2-3   1d2+1   2d2+2   3d2+3   1d2>1   2d2>2   3d2>3   1d2<1   2d2<2   2d2<11   3d2<3   3d2<21   3d2<12
+
+1F      2S      2S      1S      1S
+1F      2S      1S      1S      2C 1F
+2S 2F   2S      1C      1F      1S
+1S      2F      2F      2S 1F 1F        2F
+2F      1S      1S      1F      1S
+
+1F      2S      2S      1S      1S
+1F      2S      1S      1S      1S
+2S 2F   2S      1C      1F      2C 1S
+1S      2F      2F      2S 1F 1F        2F
+2F      1S      1S      1F      1S
+
+1F      2S      2S      1S      1S
+1F      2S      1S      1S      2C 1F
+2S 2F   2S      1C      1F      1S
+1S      2F      2F      2S 1F 1F        2F
+2F      1S      1S      1F      1S

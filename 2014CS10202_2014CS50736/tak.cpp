@@ -2,11 +2,11 @@
 #include<string>
 #include<cstring>
 #include<vector>
-#include<deque>
 #include<stack>
+#include<chrono>
 #include<stdlib.h>  //for srand
 #include<time.h>   //for time(NULL) in srand
-#include<algorithm>   //for find()
+#include<algorithm>
 
 using namespace std;
 
@@ -27,8 +27,6 @@ int checkroad();
 clock_t start, end;
 double aim;
 
-int mul=1;
-
 pair<int, int> stones[5];
 
 vector<vector<string>> possible = { {}, {"1"}, {"2","11"}, {"3","21","12","111"}, {"4","31","13","22","211","121","112","1111"},
@@ -44,8 +42,8 @@ int player_num;
 double time_limit;
 double time_left;
 
-// auto t_start = std::chrono::high_resolution_clock::now();
-// auto t_current = std::chrono::high_resolution_clock::now();
+auto t_start = std::chrono::high_resolution_clock::now();
+auto t_current = std::chrono::high_resolution_clock::now();
 
 int main() {
 	
@@ -54,9 +52,6 @@ int main() {
 	std::ios::sync_with_stdio(false);
 	
 	cin>>player_num>>n>>time_limit;
-	// player_num=2;
-	// n=5;
-	// time_limit=200;
 	time_left=time_limit;
 	cin.ignore();
 	player_num-=1;
@@ -96,11 +91,7 @@ void execute_move(string move_string, short player, bool &stand, bool isTempMove
 	col = move_string[1] - 96;
 	
 	if(isalpha(move_string[0])) {
-		if(move_string[0] == 'F') {
-			board[row][col].push(make_pair(player, move_string[0]));
-			players[player].flats -= 1;
-		}
-		else if(move_string[0] == 'S') {
+		if(move_string[0] == 'F' or move_string[0] == 'S') {
 			board[row][col].push(make_pair(player, move_string[0]));
 			players[player].flats -= 1;
 		}
@@ -109,7 +100,7 @@ void execute_move(string move_string, short player, bool &stand, bool isTempMove
 			players[player].caps -= 1;
 		}
 	}
-	else {
+	else if(isdigit(move_string[0])) {
 		count = move_string.length()-4;
 		
 		direction = move_string[3];
@@ -195,17 +186,15 @@ void execute_move(string move_string, short player, bool &stand, bool isTempMove
 void reverse_execute_move(string move_string, short player, bool stand) {
 
 	int row, col, count;
+	pair<int, int> stones[5];
 	char direction;
 	
-	row = n - move_string[2]+'0' + 1;
-	col = (int)move_string[1] - 96;
-		
 	if(isalpha(move_string[0])) {
-		if(move_string[0] == 'F') {
-			board[row][col].pop();
-			players[player].flats += 1;
-		}
-		else if(move_string[0] == 'S') {
+		row = n - move_string[2]+'0' + 1;
+		col = (int)move_string[1] - 96;
+		
+		// cout<<row<<"   "<<col;
+		if(move_string[0] == 'F' or move_string[0] == 'S') {
 			board[row][col].pop();
 			players[player].flats += 1;
 		}
@@ -214,8 +203,10 @@ void reverse_execute_move(string move_string, short player, bool stand) {
 			players[player].caps += 1;
 		}
 	}
-	else {
+	else if(isdigit(move_string[0])) {
 		count = 1;
+		row = n - move_string[2]+'0' + 1;
+		col = (int)move_string[1] - 96;
 		direction = move_string[3];
 		if(direction == '+') {
 			for(int i=4; i<move_string.length(); i++) {
@@ -277,14 +268,15 @@ void reverse_execute_move(string move_string, short player, bool stand) {
 	
 }
 
-deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
+vector<string> generate_stack_moves(vector<string> all_moves, int row, int col)
 {
-	int size = board[row][col].size();
+	int size=board[row][col].size();
+	if(size==0)
+		return all_moves;
 	size=min(size,n);
-	int i, j;
 	string pos=(char)(col+96)+to_string(n-row+1);
+	int i, j;
 	string move;
-	
 	bool capstop=false;
 	if(board[row][col].top().second=='C') capstop=true;
 	
@@ -294,11 +286,10 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 	int movelength=0;
 	if(capstop==false)
 	{
-		while(temp<=n) {
+		while(temp<=n)
+		{
 			if(!board[temp][col].empty()) {
-				if(board[temp][col].top().second=='S')
-					break;
-				else if(board[temp][col].top().second=='C')
+				if(board[temp][col].top().second=='S' || board[temp][col].top().second=='C')
 					break;
 			}
 			index++;
@@ -307,13 +298,15 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 	}
 	else
 	{
-		while(temp<=n) {
+		while(temp<=n)
+		{
 			if(!board[temp][col].empty()) {
+
 				if(board[temp][col].top().second=='C')
 					break;
-				else if(board[temp][col].top().second=='S') {
-					index++;
-					break;
+				else if(board[temp][col].top().second=='S')
+				{
+					index++; break;
 				}
 			}
 			index++;
@@ -324,14 +317,8 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 		for(j=0; j<possible[i].size(); j++) {
 			move = possible[i][j];
 			movelength=move.length();
-			if(movelength < index) {
-				all_moves.push_back(possible[i][0]+pos+"-"+move);
-			}
-			else if(movelength==index) {
-				if(capstop==true) { 
-					 if(move[movelength-1]!='1')
-						continue;
-				}
+			if(movelength <= index) {
+				if(capstop==true && movelength==index && move[movelength-1]!='1') continue;
 				all_moves.push_back(possible[i][0]+pos+"-"+move);
 			}
 			else
@@ -344,11 +331,10 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 	temp=row-1;
 	if(capstop==false)
 	{
-		while(temp>0) {
+		while(temp>0)
+		{
 			if(!board[temp][col].empty()) {
-				if(board[temp][col].top().second=='S')
-					break;
-				else if(board[temp][col].top().second=='C')
+				if(board[temp][col].top().second=='S' || board[temp][col].top().second=='C')
 					break;
 			}
 			index++;
@@ -357,13 +343,14 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 	}
 	else
 	{
-		while(temp>0) {
+		while(temp>0)
+		{
 			if(!board[temp][col].empty()) {
 				if(board[temp][col].top().second=='C')
 					break;
-				else if(board[temp][col].top().second=='S') {
-					index++;
-					break;
+				else if(board[temp][col].top().second=='S')
+				{
+					index++; break;
 				}
 			}
 			index++;
@@ -375,16 +362,9 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 		for(j=0; j<possible[i].size(); j++) {
 			move = possible[i][j];
 			movelength=move.length();
-			if(movelength < index){
-				all_moves.push_back(possible[i][0]+pos+"+"+move);
-			}
-			else if(movelength == index){
-				if(capstop==true) {
-					if(move[movelength-1]!='1')
-						continue;
-				}
-				all_moves.push_back(possible[i][0]+pos+"+"+move);
-			}
+			if(movelength <= index){
+				if(capstop==true && movelength==index && move[movelength-1]!='1') continue;
+				all_moves.push_back(possible[i][0]+pos+"+"+move);}
 			else
 				break;
 		}
@@ -395,11 +375,10 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 	temp=col+1;
 	if(capstop==false)
 	{
-		while(temp<=n) {
+		while(temp<=n)
+		{
 			if(!board[row][temp].empty()) {
-				if(board[row][temp].top().second=='S')
-					break;
-				else if(board[row][temp].top().second=='C')
+				if(board[row][temp].top().second=='S' || board[row][temp].top().second=='C')
 					break;
 			}
 			index++;
@@ -408,13 +387,14 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 	}
 	else
 	{
-		while(temp<=n) {
+		while(temp<=n)
+		{
 			if(!board[row][temp].empty()) {
 				if(board[row][temp].top().second=='C')
 					break;
-				else if(board[row][temp].top().second=='S') {
-					index++;
-					break;
+				else if(board[row][temp].top().second=='S')
+				{
+					index++; break;
 				}
 			}
 			index++;
@@ -425,16 +405,9 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 		for(j=0; j<possible[i].size(); j++) {
 			move = possible[i][j];
 			movelength=move.length();
-			if(movelength < index){
-				all_moves.push_back(possible[i][0]+pos+">"+move);
-			}
-			else if(movelength == index){
-				if(capstop==true) {
-					if(move[movelength-1]!='1')
-						continue;
-				}
-				all_moves.push_back(possible[i][0]+pos+">"+move);
-			}
+			if(movelength <= index){
+				if(capstop==true && movelength==index && move[movelength-1]!='1') continue;
+				all_moves.push_back(possible[i][0]+pos+">"+move);}
 			else
 				break;
 		}
@@ -445,11 +418,10 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 	temp=col-1;
 	if(capstop==false)
 	{
-		while(temp>0) {
+		while(temp>0)
+		{
 			if(!board[row][temp].empty()) {
-				if(board[row][temp].top().second=='S')
-					break;
-				else if(board[row][temp].top().second=='C')
+				if(board[row][temp].top().second=='S' || board[row][temp].top().second=='C')
 					break;
 			}
 			index++;
@@ -458,13 +430,14 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 	}
 	else
 	{
-		while(temp>0) {
+		while(temp>0)
+		{
 			if(!board[row][temp].empty()) {
 				if(board[row][temp].top().second=='C')
 					break;
-				else if(board[row][temp].top().second=='S') {
-					index++;
-					break;
+				else if(board[row][temp].top().second=='S')
+				{
+					index++; break;
 				}
 			}
 			index++;
@@ -476,16 +449,9 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 		for(j=0; j<possible[i].size(); j++) {
 			string move = possible[i][j];
 			movelength=move.length();
-			if(movelength < index){
-				all_moves.push_back(possible[i][0]+pos+"<"+move);
-			}
-			if(movelength == index){
-				if(capstop==true) {
-					if(move[movelength-1]!='1')
-						continue;
-				}
-				all_moves.push_back(possible[i][0]+pos+"<"+move);
-			}
+			if(movelength <= index){
+				if(capstop==true && movelength==index && move[movelength-1]!='1') continue;
+				all_moves.push_back(possible[i][0]+pos+"<"+move);}
 			else
 				break;
 		}
@@ -494,29 +460,29 @@ deque<string> generate_stack_moves(deque<string> all_moves, int row, int col)
 	return all_moves;
 }
 
-deque<string> generate_all_moves(int player) {
-	deque<string> all_moves;
-	string move;
+vector<string> generate_all_moves(int player) {
 	
-	if(players[player].flats > 1) {
-		for(int i=1; i<=n; i++) {
-			for(int j=1; j<=n; j++) {
-				if(board[i][j].empty()) {
+	string move;
+	vector<string> all_moves;
+	for(int i=1; i<=n; i++) {
+		for(int j=1; j<=n; j++) {
+			if(board[i][j].empty()) {
+				if(players[player].flats > 1) {
 					move="F";
-					move+= (char)(j+96) + to_string(n-i+1);
-					all_moves.push_back(move);
-					move[0]='S';
+					move+=(char)(j+96);
+					move+=to_string(n-i+1);
 					all_moves.push_back(move);
 				}
-			}
-		}
-	}
-	if(players[player].caps > 0) {
-		for(int i=1; i<=n; i++) {
-			for(int j=1; j<=n; j++) {
-				if(board[i][j].empty()) {
+				if(players[player].flats > 1) {
+					move="S";
+					move+=(char)(j+96);
+					move+=to_string(n-i+1);
+					all_moves.push_back(move);
+				}
+				if(players[player].caps > 0) {
 					move="C";
-					move += (char)(j+96) + to_string(n-i+1);
+					move+=(char)(j+96);
+					move+=to_string(n-i+1);
 					all_moves.push_back(move);
 				}
 			}
@@ -524,9 +490,8 @@ deque<string> generate_all_moves(int player) {
 	}
 	for(int i=1; i<=n; i++) {
 		for(int j=1; j<=n; j++) {
-			if(!board[i][j].empty())
-				if(board[i][j].top().first == player)
-					all_moves = generate_stack_moves(all_moves, i, j);
+			if((!board[i][j].empty()) && (board[i][j].top().first == player))
+				all_moves = generate_stack_moves(all_moves, i, j);
 		}
 	}
 	return all_moves;
@@ -564,7 +529,7 @@ string losemove()
 {
 	string result="";
 	int i;
-	deque<string> oppmoves=generate_all_moves(1-player_num);
+	vector<string> oppmoves=generate_all_moves(1-player_num);
 	int size=oppmoves.size();
 	for(i=0;i<size;i++)
 	{
@@ -577,12 +542,11 @@ string losemove()
 }
 
 
-int recurse(deque<string> moves, int depth, int player,int alpha,int beta)
+int recurse(vector<string> moves, int depth, int player,int alpha,int beta)
 {
 	// cout<<"\nDepth "<<depth<<" started in: "<<chrono::duration<double, milli>(chrono::high_resolution_clock::now()-t_start).count()<<"\n";
 	int len=moves.size(), i, val, temp;
 	if(depth>=(rand()%2+2))
-	// if(depth>=3)
 	{
 		val = evaluate();   //value for first move
 		if(player==player_num)
@@ -611,7 +575,7 @@ int recurse(deque<string> moves, int depth, int player,int alpha,int beta)
 			for(i=0;i<len;i++) {
 				bool stand = false;
 				execute_move(moves[i],player, stand, true);
-				deque<string> all=generate_all_moves(player);
+				vector<string> all=generate_all_moves(player);
 				
 				if(all.size()>0)
 					temp = recurse(all,depth+1,1-player,alpha,beta);
@@ -634,7 +598,7 @@ int recurse(deque<string> moves, int depth, int player,int alpha,int beta)
 			for(i=0;i<len;i++) {
 				bool stand = false;
 				execute_move(moves[i],player, stand,true);
-				deque<string> all=generate_all_moves(player);
+				vector<string> all=generate_all_moves(player);
 				
 				if(all.size()>0)
 					temp = recurse(all,depth+1,1-player,alpha,beta);
@@ -776,8 +740,10 @@ void play() {
 		// t_start = std::chrono::high_resolution_clock::now();
 		execute_move(move,1, stand);
 		
-		if(move=="Fa1")
+		if(move=="Fa1") {
+			
 			move=string("F")+"a"+to_string(n);
+		}
 		else
 			move="Fa1";
 		
@@ -807,8 +773,7 @@ void play() {
 	
 	while(true) {
 		
-		deque<string> all_moves = generate_all_moves(player_num);
-		mul*=all_moves.size();
+		vector<string> all_moves = generate_all_moves(player_num);
 		
 		if(time_left<=time_limit/10) {
 			move = all_moves[rand()%all_moves.size()];
@@ -848,7 +813,7 @@ void play() {
 					for(int i=0;i<all_moves.size();i++) {
 						bool stand2 = false;
 						execute_move(all_moves[i],player_num,stand2,true);
-						deque<string> all=generate_all_moves(player_num);
+						vector<string> all=generate_all_moves(player_num);
 						int vecsize=all.size();
 						
 						if(all.size()>0)
@@ -876,7 +841,7 @@ void play() {
 		//print all valid moves
 		// cerr<<"\n";
 		// for(int i=0;i<all_moves.size();i++) {
-			// cerr<<all_moves[i]<<"   ";
+		// 	cerr<<all_moves[i]<<"   ";
 		// }
 		// cerr<<"\n\n";
 		
@@ -901,20 +866,4 @@ void play() {
 		// t_start = std::chrono::high_resolution_clock::now();
 		execute_move(move, 1-player_num, stand);
 	}
-	
-	// for(int i=0; i<100000; i++) {
-		// execute_move("Fa1", 1-player_num, stand);
-		// execute_move("Sa2", player_num, stand);
-		// deque<string> all_moves = generate_all_moves(player_num);
-		// all_moves = generate_all_moves(player_num);
-		// execute_move("Ca3", 1-player_num, stand);
-		// all_moves = generate_all_moves(player_num);
-		// execute_move("1a1+1", player_num, stand);
-		// all_moves = generate_all_moves(player_num);
-		// execute_move("2a2+2", 1-player_num, stand);
-		// all_moves = generate_all_moves(player_num);
-		// execute_move("3a3+111", player_num, stand);
-		// all_moves = generate_all_moves(player_num);
-	// }
-	
 }
