@@ -1,1 +1,1 @@
-python AgentRoadManhattan.pyc
+./taktician

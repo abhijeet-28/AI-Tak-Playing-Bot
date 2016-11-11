@@ -580,6 +580,7 @@ string losemove()
 int recurse(deque<string> moves, int depth, int player,int alpha,int beta)
 {
 	// cout<<"\nDepth "<<depth<<" started in: "<<chrono::duration<double, milli>(chrono::high_resolution_clock::now()-t_start).count()<<"\n";
+
 	int len=moves.size(), i, val, temp;
 	if(depth>=(rand()%2+2))
 	// if(depth>=3)
@@ -700,7 +701,7 @@ int evaluate()
 	// sum+=25*(mystones-oppstones);
 	return sum;
 }
-int check(int row,int col,int hor,int ver,int arr[][6])
+int check(int row,int col,int hor,int ver,int arr[][8])
 {
 	int var1=ver;
 	if(row!=n)
@@ -740,7 +741,7 @@ int check(int row,int col,int hor,int ver,int arr[][6])
 
 int checkroad()
 {
-	int arr[6][6];
+	int arr[8][8];
 	int i,j;
 	for(i=0;i<=n;i++)
 	{
