@@ -44,6 +44,7 @@ int player_num;
 double time_limit;
 double time_left;
 
+
 // auto t_start = std::chrono::high_resolution_clock::now();
 // auto t_current = std::chrono::high_resolution_clock::now();
 
@@ -532,34 +533,164 @@ deque<string> generate_all_moves(int player) {
 	return all_moves;
 }
 
+bool checkvertical(int x,int y, int path[],int player)
+{
+	int i=x-1,j=y-1;
+	if(board[x][y].empty()) return false;
+	if(board[x][y].top().first!=player) return false;
+	if(board[x][y].top().second=='S') return false;
+
+	path[i*n+j]=1;
+	if(x==n) return true;
+	if(path[i*n+j+1]==0)
+	{
+		if(checkvertical(x,y+1,path,player))
+		{
+			return true;
+		}
+	}
+	if(x!=1)
+	{
+		if(path[(i-1)*n+j]==0)
+		{
+			if(checkvertical(x-1,y,path,player))
+				return true;
+		}
+	}
+	if(x!=n)
+	{
+		if(path[(i+1)*n+j]==0)
+		{
+			if(checkvertical(x+1,y,path,player))
+				return true;
+		}
+	}
+	if(y!=1)
+	{
+		if(path[i*n+j-1]==0)
+		{
+			if(checkvertical(x,y-1,path,player))
+				return true;
+		}
+	}
+	path[i*n+j]=0;
+	return false;
+
+
+}
+
+
+bool checkhorizontal(int x,int y, int path[],int player)
+{
+	int i=x-1,j=y-1;
+	if(board[x][y].empty()) return false;
+	if(board[x][y].top().first!=player) return false;
+	if(board[x][y].top().second=='S') return false;
+	path[i*n+j]=1;
+	if(y==n) return true;
+
+	if(path[(i+1)*n+j]==0)
+	{
+		if(checkhorizontal(x+1,y,path,player))
+		{
+			return true;
+		}
+	}
+	if(x!=1)
+	{
+		if(path[(i-1)*n+j]==0)
+		{
+			if(checkhorizontal(x-1,y,path,player))
+				return true;
+		}
+	}
+	if(y!=n)
+	{
+		if(path[i*n+j+1]==0)
+		{
+			if(checkhorizontal(x,y+1,path,player))
+				return true;
+		}
+	}
+	if(y!=1)
+	{
+		if(path[i*n+j-1]==0)
+		{
+			if(checkhorizontal(x,y-1,path,player))
+				return true;
+		}
+	}
+	path[i*n+j]=0;
+	return false;
+
+
+}
+
 bool winmove(string move,int player)
 {
 	bool stand=false;
 	int i,j;
 	execute_move(move,player,stand,true);
+	// for(i=1;i<=n;i++)
+	// {
+	// 	for(j=1;j<=n;j++)
+	// 	{
+	// 		if(board[i][j].empty()) break;
+	// 		if(board[i][j].top().first!=player) break;
+	// 		if(board[i][j].top().second=='S') break;
+	// 	}
+	// 	if(j==n+1) {reverse_execute_move(move,player,stand); return true;}
+	// }
+	// for(i=1;i<=n;i++)
+	// {
+	// 	for(j=1;j<=n;j++)
+	// 	{
+	// 		if(board[j][i].empty()) break;
+	// 		if(board[j][i].top().first!=player) break;
+	// 		if(board[j][i].top().second=='S') break;
+	// 	}
+	// 	if(j==n+1) {reverse_execute_move(move,player,stand); return true;}
+	// }
+	// reverse_execute_move(move,player,stand);
+	// return false;
+
+
+	int numb=n*n;
+	int path[numb];
+	int k;
+	for(k=0;k<numb;k++) path[k]=0;
 	for(i=1;i<=n;i++)
 	{
-		for(j=1;j<=n;j++)
+		;
+		//cout<<xx<<" "<<player<<endl;
+		if(checkvertical(1,i,path,player)) 
 		{
-			if(board[i][j].empty()) break;
-			if(board[i][j].top().first!=player) break;
-			if(board[i][j].top().second=='S') break;
+			//cout<<"move found "<<i<<endl;
+			reverse_execute_move(move,player,stand);
+			return true;
 		}
-		if(j==n+1) {reverse_execute_move(move,player,stand); return true;}
 	}
+	for(k=0;k<numb;k++) path[k]=0;
 	for(i=1;i<=n;i++)
 	{
-		for(j=1;j<=n;j++)
+		
+		if(checkhorizontal(i,1,path,player))
 		{
-			if(board[j][i].empty()) break;
-			if(board[j][i].top().first!=player) break;
-			if(board[j][i].top().second=='S') break;
+			//cerr<<"vertical "<<endl;
+			reverse_execute_move(move,player,stand);
+			return true;
 		}
-		if(j==n+1) {reverse_execute_move(move,player,stand); return true;}
 	}
 	reverse_execute_move(move,player,stand);
 	return false;
+
+
+
+
 }
+
+
+
 string losemove()
 {
 	string result="";
